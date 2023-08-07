@@ -1,4 +1,4 @@
-// ControlMouse.js
+// controlMouse.js
 
 // Este módulo proporciona funciones para controlar el mouse.
 
@@ -13,22 +13,21 @@ function floor(x) {return Math.floor(x)}
 function mouseMove(e) {
   if (touchDevice) {
 	mouseXY = [];
-	mouse_count = event.targetTouches.length;
+	mouse_count = e.targetTouches.length;
 	for(index=0;index<mouse_count;index++)
 	{
-		mouseXY.push([floor(event.touches[index].clientX),floor(event.touches[index].clientY)]);
+		mouseXY.push([floor(e.touches[index].clientX),floor(e.touches[index].clientY)]);
 	}
    }
    else{
 	mouseXY = [];
-	mouseXY.push([floor(event.clientX),floor(event.clientY)]);
+	mouseXY.push([floor(e.clientX),floor(e.clientY)]);
 	mouse_count = mouseXY.length;
-	if(event.type == "mousedown"){touch_count = 1}
-	if(event.type == "mouseup"){touch_count = 0}
+	if(e.type == "mousedown"){touch_count = 1}
+	if(e.type == "mouseup"){touch_count = 0}
        }
 
 	if(mouse_count){mouse_x = mouseXY[0][0];mouse_y = mouseXY[0][1]};
-	salida[0] = mouseXY;
 }
 
 // Añade el controlador de eventos
