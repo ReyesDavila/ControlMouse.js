@@ -4,6 +4,7 @@
 
 // Declara las variables
 var touchDevice = ('ontouchstart' in document.documentElement);
+touchDevice = false;
 var mouseXY = [];
 var mouse_x = 0;
 var mouse_y = 0;
@@ -33,8 +34,8 @@ function mouseMove(e) {
 // Añade el controlador de eventos
 if(touchDevice) {
 	document.addEventListener("touchstart", mouseMove, false);
-        document.addEventListener("touchmove", mouseMove, false);
-        document.addEventListener("touchend", mouseMove, false);
+    document.addEventListener("touchmove", mouseMove, false);
+    document.addEventListener("touchend", mouseMove, false);
 }
 else {
 	document.addEventListener("mousedown", mouseMove, false);
@@ -65,3 +66,14 @@ var mouseYInElement = null;
   // Devuelve la posición del mouse en el elemento.
   return [mouseXInElement, mouseYInElement];
 }
+
+//Para evaluar si un elemento ha sido presionado
+function addClickListener(element, handler) {
+    if (element.addEventListener) {
+      if ('ontouchstart' in window) {
+        element.addEventListener("touchstart", handler);
+      } else {
+        element.addEventListener("click", handler);
+      }
+    }
+  }
