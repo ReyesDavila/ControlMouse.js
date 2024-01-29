@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Document</title>
+</head>
+<body>
+    <style>
+
+        body{
+            background-color: black;
+            color: white;
+            width: 95vw;
+            height: 95vh;
+            border: 1px solid red;
+            margin: 0px auto;
+        }
+
+        #variables{
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            min-width: 128px;
+            background-color: rgb(4, 4, 71);
+            color: white;
+            padding: 10px;
+        }
+    </style>
+
+
+    <div id="variables"></div>
+
+
+
+
+    <div class="gamePad" id="gamePadPalanca"><div id="gamePadPalancaInterno"></div></div>
+    <div class="gamePad" id="gamePadButton"><div id="gamePadButtonInterno"></div></div>
+
+    <style>
+        .gamePad{
+            position: fixed;
+            bottom: 32px;
+            width: 128px;
+            height: 128px;
+            border: 1px solid white;
+            border-radius: 50%;
+
+        }
+
+        #gamePadPalanca{
+            left: 32px;
+        }
+
+        #gamePadButton{
+            right: 32px;
+        }
+
+        #gamePadPalancaInterno{
+            border:1px solid red;
+            width: 50%;
+            height: 50%;
+            position: relative;
+            border-radius: 50%;
+        }
+
+        #gamePadButtonInterno{
+            border: 1px solid green;
+            width: 80%;
+            height: 80%;
+            position: relative;
+            left: 10%;
+            top: 10%;
+            border-radius: 50%;
+        }
+    </style>
+
+
+
+
+    <script>
+
+    //mouse.js
+    
+    const styles = `
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none;
+    overscroll-behavior: contain;
+    overscroll-behavior-y: contain;
+    touch-action: none;
+    `;
+
+    document.documentElement.style.cssText = styles;
+
+    let isTouchDevice ='ontouchstart' in window;
+    let mouse_count = 0;
+    let mouse_button = false;
+    let mouse_x = [];
+    let mouse_y = [];
+    
+    function mouseAction(event) {
+        mouse_count = isTouchDevice ? event.touches.length : 1;
+        mouse_button = isTouchDevice ? (mouse_count>0) : event.buttons;
+        for (let i = 0; i <  mouse_count; i++) 
+        {
+            mouse_x[i] = Math.trunc(isTouchDevice ? event.touches[i].pageX : event.pageX);
+            mouse_y[i] = Math.trunc(isTouchDevice ? event.touches[i].pageY : event.pageY);
+        }    
+    }
+
+    document.addEventListener(isTouchDevice ? "touchstart" : "mousedown", mouseAction, true);
+    document.addEventListener(isTouchDevice ? "touchmove" : "mousemove", mouseAction, true);
+    document.addEventListener(isTouchDevice ? "touchend" : "mouseup", mouseAction, true);
+
+
+    let gamePadPalanca = document.getElementById("gamePadPalanca");
+    let gamePadPalancaInterno = document.getElementById("gamePadPalancaInterno");
+    let gamePadButton = document.getElementById("gamePadButton");
+    let gamePadButtonInterno = document.getElementById("gamePadButtonInterno");
+    gamePadButtonInterno.style.visibility = "hidden";
+    gamePadButton.click = false;
+    gamePadPalanca.click = false;
+    gamePadPalanca.mouse_id = 0;
+
+    setInterval(function(){
+       if(mouse_button){
+        gamePadButton.rect = gamePadButton.getBoundingClientRect();
+        gamePadPalanca.rect = gamePadPalanca.getBoundingClientRect();
+        gamePadPalanca.click = false;
+        gamePadButton.click = false;
+
+        for(i=0;i<mouse_count;i++)
+        {
+            if(mouse_x[i]>=gamePadButton.rect.x && mouse_x[i]<=gamePadButton.rect.x+gamePadButton.rect.width && mouse_y[i]>=gamePadButton.rect.y && mouse_y[i]<=gamePadButton.rect.y+gamePadButton.rect.height)
+            {
+                gamePadButton.click = true;
+                break;
+            }
+        }
+
+        for(i=0;i<mouse_count;i++)
+        {
+            if(mouse_x[i]>=gamePadPalanca.rect.x && mouse_x[i]<=gamePadPalanca.rect.x+gamePadPalanca.rect.width && mouse_y[i]>=gamePadPalanca.rect.y && mouse_y[i]<=gamePadPalanca.rect.y+gamePadPalanca.rect.height)
+            {
+                gamePadPalanca.click = true;
+                gamePadPalanca.mouse_id = i;
+                break;
+            }
+        }
+
+       }
+       else
+       {
+        gamePadPalanca.click = false;
+        gamePadButton.click = false;
+        gamePadButtonInterno.style.visibility = "hidden";
+       }
+
+       gamePadButtonInterno.style.visibility = gamePadButton.click ? "visible" : "hidden";
+        if(gamePadPalanca.click)
+        {
+            let posx = mouse_x[gamePadPalanca.mouse_id]-gamePadPalanca.getBoundingClientRect().x;
+            let posy = mouse_y[gamePadPalanca.mouse_id]-gamePadPalanca.getBoundingClientRect().y;
+            gamePadPalancaInterno.style.left = posx-gamePadPalancaInterno.getBoundingClientRect().width/2+"px";
+            gamePadPalancaInterno.style.top = posy-gamePadPalancaInterno.getBoundingClientRect().height/2+"px";
+        }
+        else
+        {
+            gamePadPalancaInterno.style.left = "25%";
+            gamePadPalancaInterno.style.top = "25%";
+        }
+
+    },1000/30);
+
+
+
+
+
+
+    let variables = document.getElementById("variables");
+
+    function ejecucionConstante(){
+        variables.innerHTML = "";
+        variables.innerHTML = "mouse_button: "+mouse_button;
+        variables.innerHTML+="<br>";
+        for (let i = 0; i <  mouse_count; i++)
+        {
+            variables.innerHTML+="mouse_x["+i+"]: "+mouse_x[i]+"<br>";
+            variables.innerHTML+="mouse_y["+i+"]: "+mouse_y[i]+"<br>";
+            variables.innerHTML+="<br>";
+        }
+    }
+
+    setInterval(ejecucionConstante,1000/10);
+    </script>
+    
+    <!-- Boton full screen -->
+    <div id="full_screen_button"></div>
+    <style>
+    #full_screen_button{background: transparent; width: 32px;height: 32px;position: fixed;top: 5px;right: 5px;border: 1px solid white;border-radius: 5px;}
+    </style>
+
+    <script>
+    color = "gray";
+    full_screen_button = document.getElementById("full_screen_button");
+    var touchDevice = ('ontouchstart' in document.documentElement);
+    if(touchDevice){full_screen_button.addEventListener("touchstart", function(){toggleFullScreen()},false);}else{
+    full_screen_button.addEventListener("mousedown", function(){toggleFullScreen()},false);}
+    function toggleFullScreen() {
+            if ((document.fullScreenElement && document.fullScreenElement !== null) ||  
+            (!document.mozFullScreen && !document.webkitIsFullScreen)) {
+            if (document.documentElement.requestFullScreen) {
+            document.documentElement.requestFullScreen();
+                } else if (document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen();
+            } else if (document.documentElement.webkitRequestFullScreen) {
+            document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+            }
+            } else {
+            if (document.cancelFullScreen) {
+            document.cancelFullScreen();
+            } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+            } else if (document.webkitCancelFullScreen) {
+            document.webkitCancelFullScreen();
+        }}}
+    </script>
+
+</body>
+</html>
